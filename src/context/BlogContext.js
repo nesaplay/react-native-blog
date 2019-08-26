@@ -1,17 +1,18 @@
 import createDataContext from './createDataContext'
 
-const addBlogPost = dispatch => () => {
-  dispatch({ type: 'add_blogpost' })
+const addBlogPost = dispatch => (title, content, cb) => {
+  dispatch({ type: 'add_blogpost', payload: { title, content } })
+  cb()
 }
 
-const deleteBlogPost = dispatch => (id) => {
+const deleteBlogPost = dispatch => id => {
   dispatch({ type: 'delete_blogpost', payload: id })
 }
 
 const blogReducer = (state, action) => {
   switch (action.type) {
     case 'add_blogpost':
-      return [...state, { id: Math.floor(Math.random() * 99999), title: `Blog Post #${state.length + 1}` }]
+      return [...state, { id: Math.floor(Math.random() * 99999), title: action.payload.title, content: action.payload.content }]
     case 'delete_blogpost':
       return state.filter(post => post.id !== action.payload)
     default:

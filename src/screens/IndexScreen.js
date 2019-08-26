@@ -24,9 +24,18 @@ const IndexScreen = ({ navigation }) => {
           </TouchableOpacity>
         )}
       />
-      <Button title='Add a blog post' onPress={actions.addBlogPost} />
     </View>
   )
+}
+
+IndexScreen.navigationOptions = ({ navigation }) => {
+  return {
+    headerRight: (
+      <TouchableOpacity onPress={() => navigation.navigate('Create')}>
+        <Feather name='plus' size={30} />
+      </TouchableOpacity>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
