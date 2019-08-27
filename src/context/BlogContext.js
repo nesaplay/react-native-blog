@@ -1,23 +1,36 @@
 import createDataContext from './createDataContext'
+import jsonServer from '../api/jsonServer'
 
-const addBlogPost = dispatch => (title, content, cb) => {
-  dispatch({ type: 'add_blogpost', payload: { title, content } })
+const getBlogPosts = dispatch => {
+  return async () => {
+    const response = await jsonServer.get('/blogposts')
+    dispatch({ type: 'get_blogposts', payload: response.data })
+  }
+}
+
+const addBlogPost = () => async (title, content, cb) => {
+  await jsonServer.post('/blogposts', { title, content })
+
   cb && cb()
 }
 
-const deleteBlogPost = dispatch => id => {
+const deleteBlogPost = dispatch => async id => {
+  await jsonServer.delete(`/blogposts/${id}`)
+
   dispatch({ type: 'delete_blogpost', payload: id })
 }
 
-const editBlogPost = dispatch => (id, title, content, cb) => {
+const editBlogPost = dispatch => async (id, title, content, cb) => {
+  await jsonServer.put(`/blogposts/${id}`, { title, content })
+  
   dispatch({ type: 'edit_blogpost', payload: { id, title, content } })
   cb && cb()
 }
 
 const blogReducer = (state, action) => {
   switch (action.type) {
-    case 'add_blogpost':
-      return [...state, { id: Math.floor(Math.random() * 99999), title: action.payload.title, content: action.payload.content }]
+    case 'get_blogposts':
+      return action.payload
     case 'delete_blogpost':
       return state.filter(post => post.id !== action.payload)
     case 'edit_blogpost':
@@ -38,6 +51,6 @@ const blogReducer = (state, action) => {
 
 export const { Context, Provider } = createDataContext({
   reducer: blogReducer,
-  actions: { addBlogPost, deleteBlogPost, editBlogPost },
-  initialState: [{ title: 'TEST POST', content: 'TEST CONTENT', id: 1 }]
+  actions: { addBlogPost, deleteBlogPost, editBlogPost, getBlogPosts },
+  initialState: [],
 })
